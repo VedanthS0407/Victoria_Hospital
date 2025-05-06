@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome to Your Dashboard</h2>
+    <p>Manage your appointments easily.</p>
+
+    <a href="/book.html"><button>Book New Appointment</button></a>
+    
+    <h3>Your Appointments:</h3>
+    <ul id="appointments"></ul>
+  </div>
+
+  <script>
+    const userId = localStorage.getItem('userId');
+
+    fetch(`/appointments/user/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('appointments');
+        if (data.length === 0) {
+          list.innerHTML = '<li>No appointments found</li>';
+        } else {
+          data.forEach(app => {
+            const item = document.createElement('li');
+            item.textContent = `${app.service} on ${new Date(app.date).toDateString()} at ${app.time}`;
+            list.appendChild(item);
+          });
+        }
+      });
+  </script>
+</body>
+</html>
