@@ -4,7 +4,7 @@ const router = express.Router();
 const Appointment = require('../models/Appointment');
 const sendEmail = require('../utils/mailer');
 const User = require('../models/user');
-// Book new appointment
+
 router.post('/book', async (req, res) => {
   try {
     const { userId, service, date, time } = req.body;
@@ -106,7 +106,5 @@ router.get('/booked-times', async (req, res) => {
     res.status(500).send("Could not fetch booked times");
   }
 });
-
-
 
 module.exports = router;

@@ -19,4 +19,4 @@ const sendEmail = async (to, subject, html) => {
   await transporter.sendMail(mailOptions);
 };
 
-module.exports = sendEmail; // ✅ This line must exist
+module.exports = sendEmail;
