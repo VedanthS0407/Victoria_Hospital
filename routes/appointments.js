@@ -9,6 +9,7 @@ router.post('/book', async (req, res) => {
     await Appointment.create({ userId, service, date, time });
     res.status(201).send("Appointment booked successfully.");
   } catch (e) {
+    console.error(e);
     res.status(400).send("Error booking appointment.");
   }
 });
