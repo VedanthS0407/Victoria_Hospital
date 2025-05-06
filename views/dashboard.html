@@ -41,8 +41,8 @@
           <strong>${app.service}</strong> on ${dateStr} at ${app.time}
           <br>Status: <em>${app.status || 'booked'}</em>
           <br>
-          <button onclick="cancelAppointment('${app._id}')">❌ Cancel</button>
-          <button onclick="toggleReschedule('${app._id}')">✏️ Reschedule</button>
+          <button onclick="cancelAppointment('${app._id}')"> Cancel</button>
+          <button onclick="toggleReschedule('${app._id}')"> Reschedule</button>
 
           <div id="reschedule-${app._id}" style="display:none; margin-top: 10px;">
             <input type="date" id="newDate-${app._id}" required>

@@ -38,8 +38,7 @@
     const userId = localStorage.getItem('userId');
     const dateInput = form.querySelector('input[name="date"]');
     const timeSelect = form.querySelector('select[name="time"]');
-  
-    // Disable booked time slots when date changes
+
     dateInput.addEventListener('change', async () => {
       const selectedDate = dateInput.value;
       if (!selectedDate) return;
@@ -62,7 +61,6 @@
       }
     });
   
-    // Submit booking
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!userId) {
