@@ -13,6 +13,28 @@ router.post('/book', async (req, res) => {
     res.status(400).send("Error booking appointment.");
   }
 });
+router.post('/cancel/:id', async (req, res) => {
+  try {
+    await Appointment.findByIdAndUpdate(req.params.id, { status: 'cancelled' });
+    res.send('Appointment cancelled');
+  } catch {
+    res.status(500).send('Error cancelling appointment');
+  }
+});
+
+router.post('/reschedule/:id', async (req, res) => {
+  const { newDate, newTime } = req.body;
+  try {
+    await Appointment.findByIdAndUpdate(req.params.id, {
+      date: newDate,
+      time: newTime,
+      status: 'rescheduled'
+    });
+    res.send('Appointment rescheduled');
+  } catch {
+    res.status(500).send('Error rescheduling appointment');
+  }
+});
 
 // Get appointments for user
 router.get('/user/:userId', async (req, res) => {
