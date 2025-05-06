@@ -33,7 +33,7 @@
       const data = await res.json();
   
       if (res.ok) {
-        localStorage.setItem('userId', data.userId); // store userId for bookings
+        localStorage.setItem('userId', data.userId); 
         alert(data.message);
         window.location.href = '/dashboard.html';
       } else {
