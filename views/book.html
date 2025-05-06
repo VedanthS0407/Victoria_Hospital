@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Appointment</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h2>Book an Appointment</h2>
+    <form id="bookingForm">
+      <label>Service:</label><br>
+      <select name="service" required>
+        <option value="">-- Select Service --</option>
+        <option value="Consultation">Consultation</option>
+        <option value="Therapy">Therapy</option>
+        <option value="Checkup">Checkup</option>
+      </select><br>
+
+      <label>Date:</label><br>
+      <input type="date" name="date" required><br>
+
+      <label>Time:</label><br>
+      <select name="time" required>
+        <option value="">-- Select Time --</option>
+        <option value="09:00 AM">09:00 AM</option>
+        <option value="11:00 AM">11:00 AM</option>
+        <option value="02:00 PM">02:00 PM</option>
+      </select><br>
+
+      <button type="submit">Book</button>
+    </form>
+    <p><a href="/dashboard.html">← Back to Dashboard</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('bookingForm');
+    const userId = localStorage.getItem('userId');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {
+        userId,
+        service: formData.get('service'),
+        date: formData.get('date'),
+        time: formData.get('time')
+      };
+
+      const res = await fetch('/appointments/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert("Appointment booked!");
+        window.location.href = "/dashboard.html";
+      } else {
+        alert("Failed to book appointment.");
+      }
+    });
+  </script>
+</body>
+</html>
