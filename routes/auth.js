@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
   try {
-    const newUser = await User.create({ name, email, password: hashed });
+    const newUser = await User.create({ name, email, password: hashed }); //validated by Gayathri
     res.status(201).json({ message: 'User created' });
   } catch (e) {
     res.status(400).json({ error: 'User already exists' });
