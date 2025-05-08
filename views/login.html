@@ -2,44 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>Login - Victoria Multi Speciality Hospital</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="form-container">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="email" name="email" placeholder="Email" required><br>
-      <input type="password" name="password" placeholder="Password" required><br>
-      <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="/register.html">Register</a></p>
-  </div>
+
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <img src="/images/hospital-logo.jpg" alt="Logo" />
+      <h1 class="main-heading">Victoria Multi Speciality Hospital</h1>
+    </div>
+    <ul class="nav-links">
+      <li><img src="/images/home-vector-icon.jpg" alt="logo1" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;" /><a href="/">Home</a></li>
+    </ul>
+  </nav>
+  
+  <section class="form-section">
+    <div class="form-container">
+      <h2>Login to Your Account</h2>
+      <form id="loginForm">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="/register.html">Register here</a></p>
+    </div>
+  </section>
 
   <script>
     const form = document.getElementById('loginForm');
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
+      const email = formData.get('email');
+      const password = formData.get('password');
 
       const res = await fetch('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.get('email'),
-          password: formData.get('password')
-        })
+        body: JSON.stringify({ email, password })
       });
-
-      const result = await res.json();
+      const data = await res.json();
       if (res.ok) {
-        localStorage.setItem('userId', result.userId);
+        localStorage.setItem('userId', data.userId);
         window.location.href = '/dashboard.html';
       } else {
-        alert(result.error || 'Login failed');
+        alert(data.error || "Login failed.");
       }
     });
   </script>
+
 </body>
 </html>

@@ -136,6 +136,72 @@
       });
     });
     fetchAndRenderAppointments();
+    const list = document.getElementById('appointments');
+
+    fetch(`/appointments/user/${userId}`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.length === 0) {
+      list.innerHTML = '<li>No appointments found</li>';
+    } else {
+      if (data.filter(a => a.status !== 'cancelled').length === 0) {
+        list.innerHTML = '<li>No active appointments</li>';
+        return;
+      }
+
+      data.forEach(app => {
+        if (app.status === 'cancelled') return;
+
+        const item = document.createElement('li');
+        const dateStr = new Date(app.date).toDateString();
+
+        item.innerHTML = `
+          <strong>${app.service}</strong> on ${dateStr} at ${app.time}
+          <br>Status: <em>${app.status || 'booked'}</em>
+          <br>
+          <button onclick="cancelAppointment('${app._id}')"> Cancel</button>
+          <button onclick="toggleReschedule('${app._id}')"> Reschedule</button>
+
+          <div id="reschedule-${app._id}" style="display:none; margin-top: 10px;">
+            <input type="date" id="newDate-${app._id}" required>
+            <select id="newTime-${app._id}">
+              <option value="09:00 AM">09:00 AM</option>
+              <option value="11:00 AM">11:00 AM</option>
+              <option value="02:00 PM">02:00 PM</option>
+            </select>
+            <button onclick="rescheduleAppointment('${app._id}')">Submit</button>
+          </div>
+          <hr>
+        `;
+        list.appendChild(item);
+      });
+    }
+  });
+
+
+    function cancelAppointment(id) {
+      fetch(`/appointments/cancel/${id}`, { method: 'POST' })
+        .then(() => window.location.reload())
+        .catch(err => alert("Error cancelling"));
+    }
+
+    function toggleReschedule(id) {
+      const el = document.getElementById(`reschedule-${id}`);
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function rescheduleAppointment(id) {
+      const newDate = document.getElementById(`newDate-${id}`).value;
+      const newTime = document.getElementById(`newTime-${id}`).value;
+
+      fetch(`/appointments/reschedule/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newDate, newTime })
+      })
+        .then(() => window.location.reload())
+        .catch(err => alert("Error rescheduling"));
+    }
   </script>
 </body>
 </html>
