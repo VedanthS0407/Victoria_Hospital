@@ -4,7 +4,6 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Register
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
@@ -16,7 +15,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -29,9 +27,5 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
   res.json({ token, userId: user._id, message: 'Login successful' });
 });
-
-
-
-
 
 module.exports = router;

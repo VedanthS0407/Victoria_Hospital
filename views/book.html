@@ -36,9 +36,38 @@
   <script>
     const form = document.getElementById('bookingForm');
     const userId = localStorage.getItem('userId');
+    const dateInput = form.querySelector('input[name="date"]');
+    const timeSelect = form.querySelector('select[name="time"]');
 
+    dateInput.addEventListener('change', async () => {
+      const selectedDate = dateInput.value;
+      if (!selectedDate) return;
+  
+      try {
+        const res = await fetch(`/appointments/booked-times?date=${selectedDate}`);
+        const bookedTimes = await res.json();
+  
+        [...timeSelect.options].forEach(option => {
+          if (option.value && bookedTimes.includes(option.value)) {
+            option.disabled = true;
+            option.textContent = `${option.value} (Booked)`;
+          } else {
+            option.disabled = false;
+            option.textContent = option.value;
+          }
+        });
+      } catch (err) {
+        console.error("Error getting booked times:", err);
+      }
+    });
+  
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!userId) {
+        alert("You must be logged in to book an appointment.");
+        return;
+      }
+  
       const formData = new FormData(form);
       const data = {
         userId,
@@ -46,20 +75,27 @@
         date: formData.get('date'),
         time: formData.get('time')
       };
-
-      const res = await fetch('/appointments/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (res.ok) {
-        alert("Appointment booked!");
-        window.location.href = "/dashboard.html";
-      } else {
-        alert("Failed to book appointment.");
+  
+      try {
+        const res = await fetch('/appointments/book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+  
+        const result = await res.text();
+        if (res.ok) {
+          alert("Appointment booked!");
+          window.location.href = "/dashboard.html";
+        } else {
+          alert("Failed to book: " + result);
+        }
+      } catch (err) {
+        console.error("Booking error:", err);
+        alert("Something went wrong. Please try again.");
       }
     });
   </script>
+  
 </body>
 </html>
