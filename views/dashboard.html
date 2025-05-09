@@ -2,74 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>Dashboard - Victoria Multi Speciality Hospital</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Welcome to Your Dashboard</h2>
-    <p>Manage your appointments easily.</p>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <img src="/images/hospital-logo.jpg" alt="Logo" />
+      <h1>Victoria Multi Speciality Hospital</h1>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/book.html">Book Appointment</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
 
-    <a href="/book.html"><button>Book New Appointment</button></a>
-    
-    <h3>Your Appointments:</h3>
-    <ul id="appointments"></ul>
-  </div>
+  <main class="dashboard-container">
+    <h2 style="text-align: center;">Your Appointments</h2>
+    <input type="text" id="searchInput" placeholder="Search by service or date..." class="search-bar" />
+    <div id="appointmentsTable" class="appointments-container"></div>
+  </main>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
+    const socket = io();
     const userId = localStorage.getItem('userId');
-    const list = document.getElementById('appointments');
 
-    fetch(`/appointments/user/${userId}`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.length === 0) {
-      list.innerHTML = '<li>No appointments found</li>';
-    } else {
-      if (data.filter(a => a.status !== 'cancelled').length === 0) {
-        list.innerHTML = '<li>No active appointments</li>';
-        return;
-      }
+    if (!userId) {
+      alert("Please login first.");
+      window.location.href = '/login.html';
+    }
 
-      data.forEach(app => {
-        if (app.status === 'cancelled') return;
+    function logout() {
+      localStorage.removeItem('userId');
+      window.location.href = '/login.html';
+    }
 
-        const item = document.createElement('li');
-        const dateStr = new Date(app.date).toDateString();
+    function fetchAndRenderAppointments() {
+      fetch(`/appointments/user/${userId}`)
+        .then(res => res.json())
+        .then(data => renderAppointments(data));
+    }
 
+    function renderAppointments(data) {
+      const container = document.getElementById("appointmentsTable");
+      container.innerHTML = '';
+
+      data.filter(app => app.status !== 'cancelled').forEach(app => {
+        const item = document.createElement('div');
+        item.className = 'appointment-card';
+        const dateStr = new Date(app.date).toLocaleDateString();
         item.innerHTML = `
-          <strong>${app.service}</strong> on ${dateStr} at ${app.time}
-          <br>Status: <em>${app.status || 'booked'}</em>
-          <br>
-          <button onclick="cancelAppointment('${app._id}')"> Cancel</button>
-          <button onclick="toggleReschedule('${app._id}')"> Reschedule</button>
-
-          <div id="reschedule-${app._id}" style="display:none; margin-top: 10px;">
-            <input type="date" id="newDate-${app._id}" required>
+          <div class="row-line">
+            <span><strong>Name:</strong> ${app.name}</span>
+            <span><strong>Age:</strong> ${app.age}</span>
+            <span><strong>Phone:</strong> ${app.phone}</span>
+          </div>
+          <div class="row-line">
+            <span><strong>Gender:</strong> ${app.gender}</span>
+            <span><strong>Department:</strong> ${app.department}</span>
+            <span><strong>Service:</strong> ${app.service}</span>
+          </div>
+          <div class="row-line">
+            <span><strong>Date:</strong> ${dateStr}</span>
+            <span><strong>Time:</strong> ${app.time}</span>
+          </div>
+          <div class="row-line">
+            <span><strong>Status:</strong> ${app.status || 'booked'}</span>
+          </div>
+          <div class="card-buttons">
+            <button onclick="cancelAppointment('${app._id}')">Cancel</button>
+            <button onclick="toggleReschedule('${app._id}')">Reschedule</button>
+          </div>
+          <div id="reschedule-${app._id}" class="reschedule-form" style="display: none;">
+            <input type="date" id="newDate-${app._id}" onchange="handleRescheduleDateChange('${app._id}')">
             <select id="newTime-${app._id}">
+              <option value="">-- Select Time --</option>
               <option value="09:00 AM">09:00 AM</option>
+              <option value="10:00 AM">10:00 AM</option>
               <option value="11:00 AM">11:00 AM</option>
+              <option value="12:00 PM">12:00 PM</option>
               <option value="02:00 PM">02:00 PM</option>
+              <option value="03:00 PM">03:00 PM</option>
+              <option value="04:00 PM">04:00 PM</option>
+              <option value="05:00 PM">05:00 PM</option>
             </select>
             <button onclick="rescheduleAppointment('${app._id}')">Submit</button>
           </div>
-          <hr>
         `;
-        list.appendChild(item);
+        container.appendChild(item);
       });
     }
-  });
 
+    async function handleRescheduleDateChange(id) {
+      const date = document.getElementById(`newDate-${id}`).value;
+      const timeSelect = document.getElementById(`newTime-${id}`);
+
+      if (!date) return;
+
+      try {
+        const res = await fetch(`/appointments/booked-times?date=${date}`);
+        const booked = await res.json();
+
+        [...timeSelect.options].forEach(opt => {
+          if (!opt.value) return;
+          opt.disabled = booked.includes(opt.value);
+          opt.textContent = booked.includes(opt.value)
+            ? `${opt.value} (Booked)`
+            : opt.value;
+        });
+      } catch (err) {
+        console.error("Error fetching booked times:", err);
+      }
+    }
 
     function cancelAppointment(id) {
-      fetch(`/appointments/cancel/${id}`, { method: 'POST' })
-        .then(() => window.location.reload())
-        .catch(err => alert("Error cancelling"));
+      fetch(`/appointments/cancel/${id}`, { method: 'POST' });
     }
 
     function toggleReschedule(id) {
-      const el = document.getElementById(`reschedule-${id}`);
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      const form = document.getElementById(`reschedule-${id}`);
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 
     function rescheduleAppointment(id) {
@@ -80,10 +133,26 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newDate, newTime })
-      })
-        .then(() => window.location.reload())
-        .catch(err => alert("Error rescheduling"));
+      }).then(() => {
+        alert("Appointment rescheduled!");
+        fetchAndRenderAppointments();
+      });
     }
+
+    document.getElementById("searchInput").addEventListener("input", function (e) {
+      const query = e.target.value.toLowerCase();
+      const cards = document.querySelectorAll(".appointment-card");
+      cards.forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(query) ? "block" : "none";
+      });
+    });
+
+    // Real-time refresh
+    socket.on('appointment:booked', fetchAndRenderAppointments);
+    socket.on('appointment:cancelled', fetchAndRenderAppointments);
+    socket.on('appointment:rescheduled', fetchAndRenderAppointments);
+
+    window.onload = fetchAndRenderAppointments;
   </script>
 </body>
 </html>
