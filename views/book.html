@@ -17,8 +17,6 @@
       <li><a href="#" onclick="logout()">Logout</a></li>
     </ul>
   </nav>
-
-  <!-- Booking Form -->
   <main class="form-container">
     <h2>Book a New Appointment</h2>
     <form id="bookingForm">
@@ -76,17 +74,12 @@
 
       <button type="submit" class="btn">Book Appointment</button>
     </form>
-  </main>
-
-  <!-- Script -->
   <script>
     const form = document.getElementById('bookingForm');
     const userId = localStorage.getItem('userId');
     const ageSelect = document.getElementById('age');
     const dateInput = document.getElementById('date');
     const timeSelect = document.getElementById('time');
-
-    // Populate age dropdown
     for (let i = 1; i <= 100; i++) {
       const option = document.createElement('option');
       option.value = i;
@@ -103,8 +96,6 @@
       localStorage.removeItem('userId');
       window.location.href = '/login.html';
     }
-
-    // Disable already booked time slots
     dateInput.addEventListener('change', async function () {
       const selectedDate = this.value;
       if (!selectedDate) return;
@@ -124,8 +115,6 @@
         console.error("Error fetching booked times:", err);
       }
     });
-
-    // Submit booking form
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
