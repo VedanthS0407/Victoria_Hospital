@@ -11,20 +11,15 @@ router.post('/book', async (req, res) => {
     service, date, time
   } = req.body;
   const io = req.app.get('io');
+
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ error: 'Invalid user ID format.' });
   }
+
   try {
     const appointment = await Appointment.create({
       userId: new mongoose.Types.ObjectId(userId),
-      name,
-      age,
-      phone,
-      gender,
-      department,
-      service,
-      date,
-      time
+      name, age, phone, gender, department, service, date, time
     });
 
     const user = await User.findById(userId);
@@ -40,6 +35,7 @@ router.post('/book', async (req, res) => {
       <p><strong>Time:</strong> ${time}</p>
     `);
 
+    io.emit('appointment:booked', appointment); // Real-time event
     res.status(201).json({ message: "Appointment booked and email sent." });
   } catch (e) {
     console.error("Booking error:", e);
@@ -48,6 +44,8 @@ router.post('/book', async (req, res) => {
 });
 
 router.post('/cancel/:id', async (req, res) => {
+  const io = req.app.get('io');
+
   try {
     const appointment = await Appointment.findByIdAndUpdate(req.params.id, { status: 'cancelled' });
     const user = await User.findById(appointment.userId);
@@ -57,6 +55,7 @@ router.post('/cancel/:id', async (req, res) => {
       <p><strong>Service:</strong> ${appointment.service}</p>
     `);
 
+    io.emit('appointment:cancelled', appointment); // Real-time event
     res.send('Appointment cancelled and email sent.');
   } catch {
     res.status(500).send('Error cancelling appointment');
@@ -64,53 +63,30 @@ router.post('/cancel/:id', async (req, res) => {
 });
 
 router.post('/reschedule/:id', async (req, res) => {
+  const io = req.app.get('io');
   const { newDate, newTime } = req.body;
+
   try {
     const appointment = await Appointment.findByIdAndUpdate(req.params.id, {
       date: newDate,
       time: newTime,
       status: 'rescheduled'
-    });
+    }, { new: true });
 
     const user = await User.findById(appointment.userId);
-
     await sendEmail(user.email, "Appointment Rescheduled", `
       <h3>Your appointment has been rescheduled.</h3>
       <p><strong>New Date:</strong> ${new Date(newDate).toDateString()}</p>
       <p><strong>New Time:</strong> ${newTime}</p>
     `);
 
+    io.emit('appointment:rescheduled', appointment); // Real-time event
     res.send('Appointment rescheduled and email sent.');
   } catch {
     res.status(500).send('Error rescheduling appointment');
   }
 });
 
-// cancel appointment
-router.post('/cancel/:id', async (req, res) => {
-  try {
-    await Appointment.findByIdAndUpdate(req.params.id, { status: 'cancelled' });
-    res.send('Appointment cancelled');
-  } catch {
-    res.status(500).send('Error cancelling appointment');
-  }
-});
-// reschedule appointment
-router.post('/reschedule/:id', async (req, res) => {
-  const { newDate, newTime } = req.body;
-  try {
-    await Appointment.findByIdAndUpdate(req.params.id, {
-      date: newDate,
-      time: newTime,
-      status: 'rescheduled'
-    });
-    res.send('Appointment rescheduled');
-  } catch {
-    res.status(500).send('Error rescheduling appointment');
-  }
-});
-
-// Get appointments for user
 router.get('/user/:userId', async (req, res) => {
   try {
     const appts = await Appointment.find({ userId: req.params.userId });
@@ -120,7 +96,6 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
-// GET: /appointments/booked-times?date=YYYY-MM-DD
 router.get('/booked-times', async (req, res) => {
   const { date } = req.query;
   if (!date) return res.status(400).send("Date required");
