@@ -96,3 +96,27 @@ Visit: `http://localhost:9000`
 
 ---
 
+## 🧾 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 📫 Contact
+
+Victoria Team - mailappointmentbooking@gmail.com
+
+Project Link: [GitHub](https://github.com/AishuN1107/Victoria-Hospital-Appointment-Booking-Platform)
+
+---
+
+## 🙏 Acknowledgments
+
+- [MongoDB Atlas](https://www.mongodb.com/atlas)
+- [Socket.IO](https://socket.io)
+- [Nodemailer](https://nodemailer.com/about/)
+- [Botpress](https://botpress.com)
+- [Selenium](https://www.selenium.dev)
+- [Font Awesome](https://fontawesome.com)
+
+—
