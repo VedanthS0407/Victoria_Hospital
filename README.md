@@ -45,3 +45,54 @@ Here's why we built this:
 - Selenium WebDriver (testing)
 
 ---
+
+## 🚀 Getting Started
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+- npm
+```sh
+npm install npm@latest -g
+```
+
+### Installation
+
+1. Clone the repo
+```sh
+git clone https://github.com/your_username/victoria-hospital-booking.git
+```
+
+2. Install NPM packages
+```sh
+npm install
+```
+
+3. Create a `.env` file in the root and add:
+```env
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret
+EMAIL_USER=your_email
+EMAIL_PASS=your_email_password_or_app_key
+```
+
+4. Run server
+```sh
+node server.js
+```
+
+---
+
+## 🧪 Usage
+
+- Register or log in
+- Book an appointment (date, time, details)
+- Cancel or reschedule via dashboard
+- Chatbot available for guidance
+- Receive confirmation emails in real-time
+
+Visit: `http://localhost:9000`
+
+---
+
