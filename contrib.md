@@ -22,7 +22,7 @@ Project Title: Victoria Multi Speciality Hospital Appointment Booking Platform
 
 3. Functional Requirements
 
-    3.1 User Registration and Login  // Contributed by Gayathri
+    3.1 User Registration and Login  // Contributed by Gayathri, Kavisha
     •	User can register with name, email, and password
     •	Passwords are securely hashed
     •	JWT tokens are used to maintain sessions
@@ -40,12 +40,12 @@ Project Title: Victoria Multi Speciality Hospital Appointment Booking Platform
     •	Email confirmation is sent using Nodemailer
     •	Socket.IO emits appointment:booked event to all clients
 
-    3.3 Cancel Appointment  // Contributed by Gayathri
+    3.3 Cancel Appointment  // Contributed by Kavisha, Gayathri
     •	Users can cancel a previously booked appointment
     •	Cancelled appointments are not shown on the dashboard
     •	Cancellation triggers an email and emits appointment:cancelled
 
-    3.4 Reschedule Appointment  // Contributed by Gayathri
+    3.4 Reschedule Appointment  // Contributed by Kavisha, Gayathri
     •	Users can select new date and time
     •	Booked time slots are disabled dynamically
     •	Updates status to rescheduled in the database
