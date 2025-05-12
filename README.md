@@ -101,6 +101,20 @@ Visit: `http://localhost:9000`
 
 ---
 
+## 🛣 Roadmap
+
+•⁠  ⁠[x] Disable already-booked slots
+•⁠  ⁠[x] Email integration with Nodemailer
+•⁠  ⁠[x] Real-time updates via Socket.IO
+•⁠  ⁠[x] Chatbot with Botpress
+•⁠  ⁠[ ] Admin dashboard and analytics
+•⁠  ⁠[ ] PDF/CSV exports for appointments
+•⁠  ⁠[ ] Docker deployment
+
+See the [open issues](https://github.com/AishuN1107/Victoria-Hospital-Appointment-Booking-Platform/issues) for more ideas.
+
+---
+
 ## 🤝 Contributing
 
 Contributions make the open source community great!
