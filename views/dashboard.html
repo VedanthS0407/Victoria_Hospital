@@ -118,6 +118,7 @@
     }
 
     function cancelAppointment(id) {
+      alert("Appoinment Cancelled!");
       fetch(`/appointments/cancel/${id}`, { method: 'POST' });
     }
 
