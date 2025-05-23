@@ -46,14 +46,18 @@ pipeline {
     }
 
     stage('Deploy to Test Environment') {
-      steps {
-        echo 'Deploying with Docker Compose...'
-        bat '''
-          docker-compose down || exit 0
-          docker-compose up -d --build
-        '''
-      }
+  steps {
+    echo 'Starting Node.js app without Docker...'
+    script {
+      // Kill previous instance if running
+      def killCmd = 'taskkill /F /IM node.exe || exit 0'
+      def startCmd = 'start /B cmd /C "node server.js > output.log 2>&1"'
+      def proc = ['cmd', '/c', "${killCmd} && ${startCmd}"].execute()
+      proc.waitForProcessOutput(System.out, System.err)
     }
+  }
+}
+
 
     stage('Release') {
       steps {
@@ -71,7 +75,7 @@ pipeline {
       steps {
         echo 'Monitoring health check...'
         bat '''
-          curl -f http://localhost:3000/health || echo Health check failed
+          curl -f http://localhost:9000/health || echo Health check failed
         '''
       }
     }
