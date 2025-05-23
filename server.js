@@ -44,5 +44,10 @@ app.get('/book.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'book.html'));
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+
 const PORT = process.env.PORT || 9000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
