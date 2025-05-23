@@ -9,34 +9,29 @@ pipeline {
 
     stage('Build') {
       steps {
-        echo 'Installing dependencies...'
         bat 'npm install'
       }
     }
 
     stage('Test') {
       steps {
-        echo 'Running unit tests...'
         bat 'npm test'
       }
     }
 
     stage('Code Quality') {
-  steps {
-    echo 'Running SonarQube analysis...'
-    withSonarQubeEnv('MySonarQube') {
-      bat '"C:\\sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat"'
+      steps {
+        withSonarQubeEnv("${SONARQUBE}") {
+          bat '"C:\\sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat"'
+        }
+      }
     }
-  }
-}
-
 
     stage('Security Scan') {
       environment {
         SNYK_TOKEN = credentials('snyk-token')
       }
       steps {
-        echo 'Running Snyk security scan...'
         bat '''
           npm install -g snyk
           snyk auth %SNYK_TOKEN%
@@ -44,19 +39,16 @@ pipeline {
         '''
       }
     }
-stage('Deploy to Test Environment') {
-  steps {
-    echo 'Starting Node.js app without Docker...'
-    bat 'start "" /B cmd /c "node server.js"'
-    sleep(time: 5, unit: 'SECONDS') // wait for server to start
-  }
-}
 
-
+    stage('Deploy to Test Environment') {
+      steps {
+        bat 'start "" /B cmd /c "node server.js"'
+        sleep(time: 5, unit: 'SECONDS')
+      }
+    }
 
     stage('Release') {
       steps {
-        echo 'Creating release tag...'
         bat '''
           git config --global user.email "vedanthsuddula@gmail.com"
           git config --global user.name "VedanthS0407"
@@ -68,10 +60,7 @@ stage('Deploy to Test Environment') {
 
     stage('Monitoring & Alerts') {
       steps {
-        echo 'Monitoring health check...'
-        bat '''
-          curl -f http://localhost:9000/health || echo Health check failed
-        '''
+        bat 'curl -f http://localhost:9000/health || echo Health check failed'
       }
     }
   }
