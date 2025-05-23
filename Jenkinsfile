@@ -44,19 +44,14 @@ pipeline {
         '''
       }
     }
-
-    stage('Deploy to Test Environment') {
+stage('Deploy to Test Environment') {
   steps {
     echo 'Starting Node.js app without Docker...'
-    script {
-      // Kill previous instance if running
-      def killCmd = 'taskkill /F /IM node.exe || exit 0'
-      def startCmd = 'start /B cmd /C "node server.js > output.log 2>&1"'
-      def proc = ['cmd', '/c', "${killCmd} && ${startCmd}"].execute()
-      proc.waitForProcessOutput(System.out, System.err)
-    }
+    bat 'start "" /B cmd /c "node server.js"'
+    sleep(time: 5, unit: 'SECONDS') // wait for server to start
   }
 }
+
 
 
     stage('Release') {
