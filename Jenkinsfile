@@ -22,13 +22,14 @@ pipeline {
     }
 
     stage('Code Quality') {
-      steps {
-        echo 'Running SonarQube analysis...'
-        withSonarQubeEnv(SONARQUBE) {
-          bat 'sonar-scanner.bat'
-        }
-      }
+  steps {
+    echo 'Running SonarQube analysis...'
+    withSonarQubeEnv('MySonarQube') {
+      bat '"C:\\sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat"'
     }
+  }
+}
+
 
     stage('Security Scan') {
       environment {
