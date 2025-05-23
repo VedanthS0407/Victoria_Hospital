@@ -7,28 +7,28 @@ pipeline {
 
   stages {
 
-//     stage('Build') {
-//       steps {
-//         echo 'Installing dependencies...'
-//         bat 'npm install'
-//       }
-//     }
+    stage('Build') {
+      steps {
+        echo 'Installing dependencies...'
+        bat 'npm install'
+      }
+    }
 
-//     stage('Test') {
-//       steps {
-//         echo 'Running unit tests...'
-//         bat 'npm test'
-//       }
-//     }
+    stage('Test') {
+      steps {
+        echo 'Running unit tests...'
+        bat 'npm test'
+      }
+    }
 
-//     stage('Code Quality') {
-//   steps {
-//     echo 'Running SonarQube analysis...'
-//     withSonarQubeEnv('MySonarQube') {
-//       bat '"C:\\sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat"'
-//     }
-//   }
-// }
+    stage('Code Quality') {
+  steps {
+    echo 'Running SonarQube analysis...'
+    withSonarQubeEnv('MySonarQube') {
+      bat '"C:\\sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat"'
+    }
+  }
+}
 
 
     stage('Security Scan') {
